@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SYSTEM LOGIN</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;700&family=Rajdhani:wght@400;600;700&display=swap');
+        
+        :root {
+            --alert-red: #ff3333;
+            --emergency-orange: #ff6600;
+            --command-blue: #0066ff;
+            --system-white: #e6e6e6;
+            --terminal-green: #33ff33;
+        }
+        
+        body {
+            background-color: #0a0a12;
+            background-image: 
+                radial-gradient(circle at 20% 30%, rgba(255, 51, 51, 0.15) 0%, transparent 25%),
+                radial-gradient(circle at 80% 70%, rgba(0, 102, 255, 0.15) 0%, transparent 25%);
+            color: var(--system-white);
+            font-family: 'Rajdhani', sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            overflow: hidden;
+        }
+        
+        .emergency-panel {
+            width: 420px;
+            background: rgba(10, 10, 20, 0.9);
+            border: 3px solid var(--alert-red);
+            border-radius: 5px;
+            box-shadow: 
+                0 0 25px rgba(255, 51, 51, 0.5),
+                inset 0 0 15px rgba(255, 51, 51, 0.3);
+            padding: 30px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .panel-header {
+            text-align: center;
+            margin-bottom: 30px;
+            border-bottom: 2px solid var(--alert-red);
+            padding-bottom: 15px;
+            position: relative;
+        }
+        
+        .panel-header::after {
+            content: "";
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            width: 100%;
+            height: 3px;
+            background: linear-gradient(90deg, transparent, var(--alert-red), transparent);
+        }
+        
+        .panel-header h1 {
+            font-family: 'Orbitron', sans-serif;
+            color: var(--alert-red);
+            font-size: 1.8rem;
+            letter-spacing: 3px;
+            margin: 0;
+            text-transform: uppercase;
+            text-shadow: 0 0 10px rgba(255, 51, 51, 0.7);
+        }
+        
+        .panel-header p {
+            color: var(--system-white);
+            margin-top: 10px;
+            font-size: 0.9rem;
+            letter-spacing: 1px;
+        }
+        
+        .alert-strip {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 8px;
+            background: repeating-linear-gradient(
+                45deg,
+                var(--alert-red),
+                var(--alert-red) 10px,
+                #000 10px,
+                #000 20px
+            );
+            animation: alertFlash 1s linear infinite;
+        }
+        
+        @keyframes alertFlash {
+            0% { opacity: 1; }
+            50% { opacity: 0.7; }
+            100% { opacity: 1; }
+        }
+        
+        .form-group {
+            margin-bottom: 25px;
+        }
+        
+        .form-group label {
+            display: block;
+            color: var(--command-blue);
+            margin-bottom: 8px;
+            font-weight: 600;
+            letter-spacing: 1px;
+            font-size: 0.95rem;
+        }
+        
+        input{
+            width: 90%;
+            padding: 12px 15px;
+            background: rgba(0, 0, 30, 0.8);
+            border: 2px solid var(--command-blue);
+            color: var(--system-white);
+            font-family: 'Rajdhani', sans-serif;
+            font-size: 1rem;
+            font-weight: 500;
+            transition: all 0.3s;
+        }
+        select {
+            width: 100%;
+            padding: 12px 15px;
+            background: rgba(0, 0, 30, 0.8);
+            border: 2px solid var(--command-blue);
+            color: var(--system-white);
+            font-family: 'Rajdhani', sans-serif;
+            font-size: 1rem;
+            font-weight: 500;
+            transition: all 0.3s;
+        }
+        
+        select {
+            appearance: none;
+            -webkit-appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%230066ff'%3E%3Cpath d='M7 10l5 5 5-5z'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 15px center;
+            background-size: 12px;
+        }
+        
+        input:focus, select:focus {
+            outline: none;
+            border-color: var(--emergency-orange);
+            box-shadow: 0 0 15px rgba(255, 102, 0, 0.5);
+        }
+        
+        .login-btn {
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(to right, var(--alert-red), var(--emergency-orange));
+            border: none;
+            color: white;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.1rem;
+            font-weight: 700;
+            letter-spacing: 2px;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-transform: uppercase;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .login-btn:hover {
+            background: linear-gradient(to right, #ff0000, #ff5500);
+            box-shadow: 0 0 25px rgba(255, 51, 51, 0.7);
+        }
+        
+        .login-btn::after {
+            content: "⚠";
+            position: absolute;
+            right: -20px;
+            transition: all 0.3s;
+        }
+        
+        .login-btn:hover::after {
+            right: 20px;
+        }
+        
+        .status-message {
+            padding: 12px;
+            border-radius: 4px;
+            margin: 20px 0;
+            text-align: center;
+            font-weight: 600;
+            display: none;
+        }
+        
+        .alert {
+            background-color: rgba(255, 51, 51, 0.2);
+            border: 1px solid var(--alert-red);
+            color: var(--alert-red);
+            display: block;
+        }
+        
+        .success {
+            background-color: rgba(0, 255, 0, 0.2);
+            border: 1px solid var(--terminal-green);
+            color: var(--terminal-green);
+            display: block;
+        }
+        
+        .radar-scan {
+            position: absolute;
+            bottom: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: 
+                radial-gradient(circle at center, transparent 60%, rgba(0, 102, 255, 0.1) 60.5%, transparent 61%),
+                conic-gradient(from 0deg, transparent 0%, rgba(0, 102, 255, 0.3) 10%, transparent 20%);
+            animation: radarSpin 4s linear infinite;
+            pointer-events: none;
+            z-index: -1;
+        }
+        
+        @keyframes radarSpin {
+            100% { transform: rotate(360deg); }
+        }
+        
+        .blinking-cursor {
+            animation: blink 1s step-end infinite;
+        }
+        
+        @keyframes blink {
+            from, to { opacity: 1; }
+            50% { opacity: 0; }
+        }
+    </style>
+</head>
+<body>
+    <div class="login-terminal flicker">
+        <div class="scanline"></div>
+        <div class="terminal-header">
+            <h1>SYSTEM LOGIN</h1>
+            <p>ACCESS RESTRICTED TO AUTHORIZED PERSONNEL</p>
+        </div>
+        
+        <form id="login-form">
+            <div class="form-group">
+                <label for="role">USER TYPE:</label>
+                <select id="role">
+                    <option value="admin">ADMINISTRATOR</option>
+                    <option value="volunteer">VOLUNTEER</option>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label for="username">USERNAME:</label>
+                <input type="text" id="username" placeholder="ENTER ACCESS CODE" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="password">PASSWORD:</label>
+                <input type="password" id="password" placeholder="ENTER ENCRYPTION KEY" required>
+            </div>
+            
+            <button type="button" class="login-btn" onclick="login()">AUTHENTICATE</button>
+            <div class="error-message" id="errorMessage"></div>
+        </form>
+    </div>
+
+    <script>
+       function login() {
+                const role = document.getElementById('role').value;
+                const username = document.getElementById('username').value.trim();
+                const password = document.getElementById('password').value.trim();
+                const error = document.getElementById('errorMessage');
+                const terminal = document.querySelector('.login-terminal');
+
+                error.style.display = 'none';
+
+                if (!username || !password) {
+                    showError("ERROR: CREDENTIALS REQUIRED");
+                    terminal.classList.add('flicker');
+                    setTimeout(() => terminal.classList.remove('flicker'), 300);
+                    return;
+                }
+
+                // Create FormData object
+                const formData = new FormData();
+                formData.append('role', role);
+                formData.append('username', username);
+                formData.append('password', password);
+
+                fetch('login.php', {
+                    method: 'POST',
+                    body: formData
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.status === 'success') {
+                        showError("ACCESS GRANTED: INITIALIZING SYSTEM...", 'success');
+                        setTimeout(() => {
+                            window.location.href = `${role}_dashboard.php`;
+                        }, 1500);
+                    } else {
+                        showError(`SECURITY ALERT: ${data.message}`);
+                        terminal.classList.add('flicker');
+                        setTimeout(() => terminal.classList.remove('flicker'), 300);
+                    }
+                })
+                .catch(error => {
+                    showError("NETWORK ERROR: CONTACT SYSTEM ADMIN");
+                    console.error('Error:', error);
+                });
+            }
+
+        function showError(message, type = 'error') {
+            const error = document.getElementById('errorMessage');
+            error.textContent = message;
+            error.style.color = type === 'success' ? 'var(--matrix-green)' : '#ff073a';
+            error.style.textShadow = type === 'success' ? '0 0 5px var(--matrix-green)' : '0 0 5px #ff073a';
+            error.style.display = 'block';
+        }
+
+        // CRT monitor effect
+        document.addEventListener('mousemove', (e) => {
+            const terminal = document.querySelector('.login-terminal');
+            const x = e.clientX / window.innerWidth;
+            const y = e.clientY / window.innerHeight;
+            terminal.style.transform = `perspective(1000px) rotateY(${(x - 0.5) * 5}deg) rotateX(${(0.5 - y) * 5}deg)`;
+        });
+    </script>
+</body>
+</html>
+
+<?php
+session_start();
+
+include 'db_connect.php';
+// Get POST data
+$role = $_POST['role'] ?? '';
+$username = trim($_POST['username'] ?? '');
+$password = trim($_POST['password'] ?? '');
+
+// Validate input
+if (empty($role) || empty($username) || empty($password)) {
+    echo json_encode(['status' => 'error', 'message' => 'All fields are required']);
+    exit;
+}
+
+try {
+    // Determine which table to query
+    $table = ($role === 'admin') ? 'admins' : 'volunteers';
+    $username_field = ($role === 'admin') ? 'username' : 'email';
+    
+    // Prepare SQL statement
+    $stmt = $conn->prepare("SELECT id, password FROM $table WHERE $username_field = ?");
+    $stmt->bind_param("s", $username);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    
+    if ($result->num_rows === 1) {
+        $user = $result->fetch_assoc();
+        
+        // Verify password
+        if (password_verify($password, $user['password'])) {
+            // Set session variables
+            $_SESSION['user_id'] = $user['id'];
+            $_SESSION['user_role'] = $role;
+            
+            echo json_encode(['status' => 'success', 'message' => 'Login successful']);
+        } else {
+            echo json_encode(['status' => 'error', 'message' => 'Invalid credentials']);
+        }
+    } else {
+        echo json_encode(['status' => 'error', 'message' => 'User not found']);
+    }
+    
+    $stmt->close();
+} catch (Exception $e) {
+    echo json_encode(['status' => 'error', 'message' => 'Authentication failed']);
+}
+
+$conn->close();
+?>

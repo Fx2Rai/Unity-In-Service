@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Disaster Alert System</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+    <style>
+        :root {
+            --primary: #FF6B35;
+            --secondary: #004E89;
+            --dark: #1A1A1D;
+            --light: #F8F9FA;
+            --gray: #2D2D2D;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        body {
+            background-color: var(--dark);
+            color: var(--light);
+            min-height: 100vh;
+        }
+
+        header {
+            background: var(--secondary);
+            padding: 2rem;
+            text-align: center;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 2rem auto;
+            padding: 0 1.5rem;
+        }
+
+        .alert-card {
+            background: #1E1E1E;
+            border-radius: 15px;
+            padding: 2rem;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.3);
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 1rem;
+            background: var(--gray);
+            border: 2px solid #3D3D3D;
+            border-radius: 8px;
+            color: var(--light);
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        input:focus, select:focus {
+            border-color: var(--primary);
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(255,107,53,0.2);
+        }
+
+        .search-container {
+            position: relative;
+            margin-bottom: 1.5rem;
+        }
+
+        .search-button {
+            position: absolute;
+            right: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            color: var(--primary);
+            cursor: pointer;
+        }
+
+        button.submit-btn {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 1.2rem;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.8rem;
+        }
+
+        button.submit-btn:hover {
+            background: #E05A2B;
+            transform: translateY(-2px);
+        }
+
+        #map {
+            height: 400px;
+            width: 100%;
+            border-radius: 12px;
+            margin: 1.5rem 0;
+            border: 3px solid #3D3D3D;
+        }
+
+        .status-message {
+            padding: 1.2rem;
+            border-radius: 8px;
+            margin: 1.5rem 0;
+            display: none;
+            font-size: 0.95rem;
+        }
+
+        .success {
+            background: #4CAF50;
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+        }
+
+        .error {
+            background: #F44336;
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+        }
+
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: var(--primary);
+            text-decoration: none;
+            margin-top: 1.5rem;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .back-link:hover {
+            transform: translateX(-5px);
+            text-decoration: underline;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 0 1rem;
+            }
+            
+            .alert-card {
+                padding: 1.5rem;
+            }
+            
+            #map {
+                height: 300px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1><i class="fas fa-exclamation-triangle"></i> Disaster Alert System</h1>
+    </header>
+
+    <div class="container">
+        <div class="alert-card">
+            <h2 style="margin-bottom: 1.5rem; display: flex; align-items: center; gap: 0.8rem;">
+                <i class="fas fa-bullhorn"></i> Report Disaster
+            </h2>
+            
+            <div class="status-message" id="statusMessage"></div>
+
+            <div class="form-group">
+                <input type="text" id="user_name" placeholder="Your Full Name" required>
+            </div>
+
+            <div class="form-group">
+                <select id="disaster-type" required>
+                    <option value="">Select Disaster Type</option>
+                    <option value="Flood">🌊 Flood</option>
+                    <option value="Earthquake">🌍 Earthquake</option>
+                    <option value="Fire">🔥 Fire</option>
+                    <option value="Hurricane">🌀 Hurricane</option>
+                    <option value="Landslide">⛰️ Landslide</option>
+                </select>
+            </div>
+
+            <div class="form-group search-container">
+                <input type="text" id="location-search" 
+                       placeholder="Search location or click on map..."
+                       onkeypress="handleLocationSearch(event)">
+                <button class="search-button" onclick="handleLocationSearchManual()">
+                    <i class="fas fa-search"></i>
+                </button>
+            </div>
+
+            <div class="form-group">
+                <div id="map"></div>
+            </div>
+
+            <button class="submit-btn" onclick="handleAlertSubmission()">
+                <i class="fas fa-paper-plane"></i> Send Alert
+            </button>
+            
+            <a href="userdisplay.html" class="back-link">
+                <i class="fas fa-arrow-left"></i> Return to Dashboard
+            </a>
+        </div>
+    </div>
+
+    <script>
+        let selectedLat = null;
+        let selectedLon = null;
+        let map, marker;
+
+        function initMap() {
+            console.log("Initializing map...");
+            map = L.map('map', {
+                zoomControl: false
+            }).setView([20.5937, 78.9629], 5);
+
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: '© OpenStreetMap contributors'
+            }).addTo(map);
+
+            console.log("Map initialized");
+
+            L.control.zoom({
+                position: 'topright'
+            }).addTo(map);
+
+            marker = L.marker([20.5937, 78.9629], {
+                draggable: true,
+                icon: L.icon({
+                    iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-red.png',
+                    iconSize: [25, 41],
+                    iconAnchor: [12, 41]
+                })
+            }).addTo(map)
+            .bindPopup("Drag marker to select location")
+            .openPopup();
+
+            marker.on('dragend', updateMarkerPosition);
+            map.on('click', handleMapClick);
+        }
+
+        function updateMarkerPosition(e) {
+            const pos = marker.getLatLng();
+            selectedLat = pos.lat;
+            selectedLon = pos.lng;
+            marker.setPopupContent(`Selected Location: ${pos.lat.toFixed(4)}, ${pos.lng.toFixed(4)}`);
+        }
+
+        function handleMapClick(e) {
+            selectedLat = e.latlng.lat;
+            selectedLon = e.latlng.lng;
+            marker.setLatLng([selectedLat, selectedLon])
+                  .setPopupContent(`Selected Location: ${selectedLat.toFixed(4)}, ${selectedLon.toFixed(4)}`)
+                  .openPopup();
+        }
+
+        async function searchLocation(query) {
+            try {
+                const response = await fetch(
+                    `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}`
+                );
+                const data = await response.json();
+
+                if (!data.length) {
+                    showMessage('Location not found. Please try different search terms.', 'error');
+                    return null;
+                }
+
+                return data[0];
+            } catch (error) {
+                showMessage('Search service unavailable. Please try again later.', 'error');
+                console.error('Search error:', error);
+                return null;
+            }
+        }
+
+        async function handleLocationSearch(e) {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                const query = document.getElementById('location-search').value.trim();
+                if (!query) return;
+                
+                const result = await searchLocation(query);
+                if (result) updateMapWithSearchResult(result);
+            }
+        }
+
+        async function handleLocationSearchManual() {
+            const query = document.getElementById('location-search').value.trim();
+            if (!query) return;
+            
+            const result = await searchLocation(query);
+            if (result) updateMapWithSearchResult(result);
+        }
+
+        function updateMapWithSearchResult(result) {
+            selectedLat = parseFloat(result.lat);
+            selectedLon = parseFloat(result.lon);
+            
+            map.setView([selectedLat, selectedLon], 12);
+            marker.setLatLng([selectedLat, selectedLon])
+                  .setPopupContent(result.display_name)
+                  .openPopup();
+            
+            document.getElementById('location-search').value = '';
+        }
+
+        async function handleAlertSubmission() {
+            const userName = document.getElementById('user_name').value.trim();
+            const disasterType = document.getElementById('disaster-type').value;
+            const statusEl = document.getElementById('statusMessage');
+            const submitBtn = document.querySelector('.submit-btn');
+
+            if (!validateForm(userName, disasterType)) return;
+
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Sending...';
+
+            try {
+                const response = await fetch('alert_disaster.php', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        user_name: userName,
+                        disaster_type: disasterType,
+                        latitude: selectedLat,
+                        longitude: selectedLon
+                    })
+                });
+
+                const result = await response.json();
+                handleSubmissionResponse(result);
+            } catch (error) {
+                handleSubmissionError(error);
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = '<i class="fas fa-paper-plane"></i> Send Alert';
+            }
+        }
+
+        function validateForm(name, type) {
+            if (!name || !type || !selectedLat || !selectedLon) {
+                showMessage('Please fill all required fields and select a location', 'error');
+                return false;
+            }
+            return true;
+        }
+
+        function handleSubmissionResponse(result) {
+            const statusEl = document.getElementById('statusMessage');
+            if (result.success) {
+                showMessage('Alert successfully submitted! Redirecting...', 'success');
+                resetForm();
+                setTimeout(() => window.location.href = 'userdisplay.html', 1500);
+            } else {
+                showMessage(result.error || 'Submission failed. Please try again.', 'error');
+            }
+        }
+
+        function handleSubmissionError(error) {
+            console.error('Submission error:', error);
+            const message = error.message.includes('NetworkError') 
+                ? 'Network error. Please check your connection.'
+                : 'An unexpected error occurred.';
+            showMessage(message, 'error');
+        }
+
+        function resetForm() {
+            document.getElementById('user_name').value = '';
+            document.getElementById('disaster-type').selectedIndex = 0;
+            document.getElementById('location-search').value = '';
+            map.setView([20.5937, 78.9629], 5);
+            marker.setLatLng([20.5937, 78.9629])
+                  .setPopupContent('Drag marker to select location');
+        }
+
+        function showMessage(message, type) {
+            const statusEl = document.getElementById('statusMessage');
+            statusEl.innerHTML = `
+                <i class="fas fa-${type === 'success' ? 'check-circle' : 'exclamation-circle'}"></i>
+                ${message}
+            `;
+            statusEl.className = `status-message ${type}`;
+            setTimeout(() => statusEl.className = 'status-message', 5000);
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            initMap();
+            document.getElementById('location-search').focus();
+        });
+    </script>
+</body>
+</html>

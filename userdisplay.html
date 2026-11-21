@@ -1,0 +1,652 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Unity In Service - Disaster Volunteering</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+    <style>
+        :root {
+            --primary: #FF6B35;
+            --primary-dark: #E05A2B;
+            --secondary: #004E89;
+            --dark: #1A1A1D;
+            --gray: #4E4E50;
+            --light: #F8F9FA;
+            --success: #4BB543;
+            --warning: #F4B400;
+            --danger: #DB4437;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            background-color: var(--dark);
+            color: var(--light);
+            font-family: 'Poppins', sans-serif;
+            line-height: 1.6;
+        }
+        
+        header {
+            width: 100%;
+            background: linear-gradient(135deg, var(--dark), var(--gray));
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: fixed;
+            top: 0;
+            z-index: 1000;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: white;
+            text-decoration: none;
+        }
+        
+        .logo i {
+            color: var(--primary);
+        }
+        
+        .menu-btn {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 1.5rem;
+            cursor: pointer;
+            display: none;
+        }
+        
+        nav {
+            display: flex;
+            gap: 1.5rem;
+        }
+        
+        nav a {
+            color: white;
+            text-decoration: none;
+            font-weight: 500;
+            padding: 0.5rem 1rem;
+            border-radius: 4px;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        nav a:hover, nav a.active {
+            background-color: rgba(255, 255, 255, 0.1);
+            color: var(--primary);
+        }
+        
+        nav a i {
+            font-size: 1.1rem;
+        }
+        
+        .sidebar {
+            position: fixed;
+            left: -280px;
+            top: 0;
+            width: 280px;
+            height: 100%;
+            background: var(--dark);
+            padding: 5rem 0 2rem;
+            transition: all 0.3s ease;
+            z-index: 999;
+            box-shadow: 5px 0 15px rgba(0, 0, 0, 0.2);
+        }
+        
+        .sidebar.active {
+            left: 0;
+        }
+        
+        .sidebar ul {
+            list-style: none;
+        }
+        
+        .sidebar ul li a {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 1rem 2rem;
+            color: white;
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+        
+        .sidebar ul li a:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+            color: var(--primary);
+            padding-left: 2.5rem;
+        }
+        
+        .sidebar ul li a i {
+            width: 1.5rem;
+            text-align: center;
+        }
+        
+        .close-btn {
+            position: absolute;
+            top: 1.5rem;
+            right: 1.5rem;
+            background: none;
+            border: none;
+            color: white;
+            font-size: 1.5rem;
+            cursor: pointer;
+        }
+        
+        .main {
+            margin-top: 80px;
+            padding: 2rem;
+        }
+        
+        .hero {
+            background: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), 
+                        url('https://images.unsplash.com/photo-1582213782179-e0d53f98f2ca?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80');
+            background-size: cover;
+            background-position: center;
+            height: 60vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            border-radius: 10px;
+            margin-bottom: 2rem;
+            padding: 2rem;
+        }
+        
+        .hero h1 {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            color: white;
+        }
+        
+        .hero p {
+            font-size: 1.2rem;
+            max-width: 800px;
+            margin-bottom: 2rem;
+        }
+        
+        .btn {
+            display: inline-block;
+            background-color: var(--primary);
+            color: white;
+            padding: 0.8rem 1.8rem;
+            border-radius: 50px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            border: none;
+            cursor: pointer;
+        }
+        
+        .btn:hover {
+            background-color: var(--primary-dark);
+            transform: translateY(-3px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+        }
+        
+        .btn-outline {
+            background: transparent;
+            border: 2px solid white;
+            margin-left: 1rem;
+        }
+        
+        .btn-outline:hover {
+            background: white;
+            color: var(--dark);
+        }
+        
+        .section-title {
+            text-align: center;
+            margin-bottom: 2rem;
+            position: relative;
+        }
+        
+        .section-title h2 {
+            font-size: 2rem;
+            display: inline-block;
+            padding-bottom: 0.5rem;
+        }
+        
+        .section-title h2::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80px;
+            height: 3px;
+            background-color: var(--primary);
+        }
+        
+        .requirements-section {
+            background-color: rgba(30, 30, 33, 0.8);
+            border-radius: 10px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 1rem;
+        }
+        
+        th, td {
+            padding: 1rem;
+            text-align: left;
+            border-bottom: 1px solid var(--gray);
+        }
+        
+        th {
+            background-color: var(--secondary);
+            color: white;
+            font-weight: 600;
+        }
+        
+        tr:hover {
+            background-color: rgba(255, 107, 53, 0.1);
+        }
+        
+        .progress-container {
+            width: 100%;
+            height: 20px;
+            background-color: var(--gray);
+            border-radius: 10px;
+            overflow: hidden;
+        }
+        
+        .progress-bar {
+            height: 100%;
+            background: linear-gradient(90deg, var(--primary), var(--primary-dark));
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 0.7rem;
+            font-weight: bold;
+            transition: width 0.5s ease;
+        }
+        
+        .status {
+            display: inline-block;
+            padding: 0.3rem 0.6rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+        
+        .status-pending {
+            background-color: var(--warning);
+            color: var(--dark);
+        }
+        
+        .status-complete {
+            background-color: var(--success);
+            color: white;
+        }
+        
+        .status-urgent {
+            background-color: var(--danger);
+            color: white;
+            animation: pulse 1.5s infinite;
+        }
+        
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.7; }
+            100% { opacity: 1; }
+        }
+        
+        .action-btn {
+            background-color: var(--secondary);
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .action-btn:hover {
+            background-color: #003D6B;
+            transform: translateY(-2px);
+        }
+        
+        footer {
+            background: linear-gradient(135deg, var(--dark), var(--gray));
+            padding: 3rem 2rem;
+            text-align: center;
+        }
+        
+        .footer-content {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 1.5rem;
+        }
+        
+        .social-links {
+            display: flex;
+            gap: 1.5rem;
+        }
+        
+        .social-links a {
+            color: white;
+            font-size: 1.5rem;
+            transition: all 0.3s ease;
+        }
+        
+        .social-links a:hover {
+            color: var(--primary);
+            transform: translateY(-3px);
+        }
+        
+        .copyright {
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 0.9rem;
+        }
+        
+        #map {
+            height: 500px;
+            width: 100%;
+            border-radius: 10px;
+            margin-top: 2rem;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+        
+        .leaflet-popup-content {
+            font-family: 'Poppins', sans-serif;
+            padding: 1rem;
+            min-width: 250px;
+        }
+        
+        @media (max-width: 992px) {
+            .menu-btn {
+                display: block;
+            }
+            
+            nav {
+                display: none;
+            }
+            
+            .hero h1 {
+                font-size: 2.5rem;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .hero {
+                height: 50vh;
+            }
+            
+            .hero h1 {
+                font-size: 2rem;
+            }
+            
+            .hero p {
+                font-size: 1rem;
+            }
+            
+            .btn-container {
+                display: flex;
+                flex-direction: column;
+                gap: 1rem;
+            }
+            
+            .btn-outline {
+                margin-left: 0;
+            }
+            
+            table {
+                display: block;
+                overflow-x: auto;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <a href="#" class="logo">
+            <i class="fas fa-hands-helping"></i>
+            <span>Unity In Service</span>
+        </a>
+        <button class="menu-btn" onclick="toggleSidebar()">
+            <i class="fas fa-bars"></i>
+        </button>
+        <nav>
+            <a href="#requirements" class="active">
+                <i class="fas fa-list"></i>
+                <span>Requirements</span>
+            </a>
+            <a href="login.php">
+                <i class="fas fa-sign-in-alt"></i>
+                <span>Login</span>
+            </a>
+            <a href="volunteer_registration.php">
+                <i class="fas fa-user-plus"></i>
+                <span>Register</span>
+            </a>
+            <a href="disaster_alert.html">
+                <i class="fas fa-bell"></i>
+                <span>Alert Disaster</span>
+            </a>
+        </nav>
+    </header>
+    
+    <div id="sidebar" class="sidebar">
+        <button class="close-btn" onclick="toggleSidebar()">
+            <i class="fas fa-times"></i>
+        </button>
+        <ul>
+            <li>
+                <a href="#requirements">
+                    <i class="fas fa-list"></i>
+                    <span>Requirements</span>
+                </a>
+            </li>
+            <li>
+                <a href="login.php">
+                    <i class="fas fa-sign-in-alt"></i>
+                    <span>Login</span>
+                </a>
+            </li>
+            <li>
+                <a href="volunteer_registration.php">
+                    <i class="fas fa-user-plus"></i>
+                    <span>Register</span>
+                </a>
+            </li>
+            <li>
+                <a href="disaster_alert.html">
+                    <i class="fas fa-bell"></i>
+                    <span>Alert Disaster</span>
+                </a>
+            </li>
+        </ul>
+    </div>
+    
+    <main class="main">
+        <section class="hero">
+            <h1>Together We Can Make a Difference</h1>
+            <p>Join our network of volunteers to provide critical support in disaster-affected areas. Your help can save lives and rebuild communities.</p>
+            <div class="btn-container">
+                <a href="volunteer_registration.php" class="btn">Become a Volunteer</a>
+                <a href="#requirements" class="btn btn-outline">View Needs</a>
+            </div>
+        </section>
+        
+        <section class="requirements-section" id="requirements">
+            <div class="section-title">
+                <h2>Disaster Area Requirements</h2>
+            </div>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Requirement</th>
+                        <th>Disaster Area</th>
+                        <th>Needed</th>
+                        <th>Collected</th>
+                        <th>Progress</th>
+                        <th>Status</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody id="requirements-list">
+                    <!-- Data will be loaded here dynamically -->
+                </tbody>
+            </table>
+            
+            <div class="section-title">
+                <h2>Disaster Locations</h2>
+            </div>
+            <div id="map"></div>
+        </section>
+    </main>
+    
+    <footer>
+        <div class="footer-content">
+            <div class="social-links">
+                <a href="#"><i class="fab fa-facebook"></i></a>
+                <a href="#"><i class="fab fa-twitter"></i></a>
+                <a href="#"><i class="fab fa-instagram"></i></a>
+                <a href="#"><i class="fab fa-linkedin"></i></a>
+            </div>
+            <p class="copyright">&copy; 2025 Unity In Service. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script>
+        // Initialize map
+        let map;
+
+        function toggleSidebar() {
+            const sidebar = document.getElementById("sidebar");
+            sidebar.classList.toggle("active");
+        }
+
+        async function fetchRequirements() {
+            try {
+                const response = await fetch('fetch_requirements.php');
+                const data = await response.json();
+                
+                const tableBody = document.getElementById("requirements-list");
+                tableBody.innerHTML = "";
+                
+                // Initialize map if not already initialized
+                if (!map) {
+                    map = L.map('map').setView([20, 0], 2);
+                    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                        attribution: '© OpenStreetMap contributors'
+                    }).addTo(map);
+                }
+
+                const markers = [];
+                
+                data.forEach(req => {
+                    const progress = (req.collected / req.needed) * 100;
+                    const statusClass = progress >= 100 ? "status-complete" : 
+                                      progress >= 50 ? "status-pending" : "status-urgent";
+
+                    // Add table row
+                    const row = document.createElement("tr");
+                    row.innerHTML = `
+                        <td>${req.requirement}</td>
+                        <td>${req.disaster_area}</td>
+                        <td>${req.needed.toLocaleString()}</td>
+                        <td>${req.collected.toLocaleString()}</td>
+                        <td>
+                            <div class="progress-container">
+                                <div class="progress-bar" style="width: ${progress}%">
+                                    ${progress.toFixed(1)}%
+                                </div>
+                            </div>
+                        </td>
+                        <td><span class="status ${statusClass}">${progress >= 100 ? 'Complete' : progress >= 50 ? 'In Progress' : 'Urgent'}</span></td>
+                        <td>
+                            ${req.latitude && req.longitude ? 
+                                `<button class="action-btn" onclick="map.setView([${req.latitude}, ${req.longitude}], 12)">
+                                    <i class="fas fa-map-marker-alt"></i>
+                                    <span>View</span>
+                                </button>` : 
+                                'No coordinates'}
+                        </td>
+                    `;
+                    tableBody.appendChild(row);
+
+                    // Add marker if coordinates exist
+                    if (req.latitude && req.longitude) {
+                        const marker = L.marker([req.latitude, req.longitude]).addTo(map);
+                        marker.bindPopup(`
+                            <b>${req.disaster_area}</b><br>
+                            ${req.requirement}<br>
+                            Needed: ${req.needed}<br>
+                            Collected: ${req.collected}<br>
+                            Status: ${progress >= 100 ? 'Complete' : progress >= 50 ? 'In Progress' : 'Urgent'}
+                        `);
+                        markers.push([req.latitude, req.longitude]);
+                    }
+                });
+
+                // Adjust map view to show all markers
+                if (markers.length > 0) {
+                    map.fitBounds(L.latLngBounds(markers));
+                }
+
+            } catch (error) {
+                console.error("Error:", error);
+                alert('Failed to load disaster data');
+            }
+        }
+
+        // Initialize when page loads
+        document.addEventListener("DOMContentLoaded", function() {
+            fetchRequirements();
+            
+            // Smooth scrolling for anchor links
+            document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+                anchor.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const targetId = this.getAttribute('href');
+                    if (targetId === '#') return;
+                    
+                    const targetElement = document.querySelector(targetId);
+                    if (targetElement) {
+                        window.scrollTo({
+                            top: targetElement.offsetTop - 80,
+                            behavior: 'smooth'
+                        });
+                        
+                        // Close sidebar if open
+                        const sidebar = document.getElementById("sidebar");
+                        sidebar.classList.remove("active");
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>

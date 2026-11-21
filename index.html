@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Loading Analysis</title>
+    <style>
+        /* Cosmic Background */
+        body {
+            background: radial-gradient(ellipse at center, #0a0e2a 0%, #000000 100%);
+            color: #ffffff;
+            font-family: 'Arial', sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            overflow: hidden;
+            position: relative;
+        }
+
+        /* Animated Stars */
+        .stars {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+        }
+
+        .star {
+            position: absolute;
+            background: white;
+            border-radius: 50%;
+            animation: twinkle var(--duration) infinite ease-in-out;
+        }
+
+        @keyframes twinkle {
+            0%, 100% { opacity: 0.2; }
+            50% { opacity: 1; }
+        }
+
+        /* Nebula Effect */
+        .nebula {
+            position: absolute;
+            width: 300px;
+            height: 300px;
+            border-radius: 50%;
+            filter: blur(60px);
+            opacity: 0.7;
+            animation: drift 30s infinite linear;
+        }
+
+        .nebula-1 {
+            background: radial-gradient(circle, #ff00aa, transparent 70%);
+            top: 20%;
+            left: 10%;
+        }
+
+        .nebula-2 {
+            background: radial-gradient(circle, #00aaff, transparent 70%);
+            bottom: 15%;
+            right: 10%;
+            animation-delay: -15s;
+        }
+
+        @keyframes drift {
+            0% { transform: translate(0, 0) rotate(0deg); }
+            100% { transform: translate(100px, 50px) rotate(360deg); }
+        }
+
+        /* Loading Container */
+        .loader-container {
+            position: relative;
+            z-index: 10;
+            text-align: center;
+        }
+
+        /* Animated Logo */
+        .logo {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 40px;
+        }
+
+        .logo-letter {
+            width: 60px;
+            height: 60px;
+            position: relative;
+        }
+
+        .logo-letter svg {
+            width: 100%;
+            height: 100%;
+        }
+
+        .logo-letter path {
+            stroke-dasharray: 100;
+            stroke-dashoffset: 100;
+            animation: draw 1.5s forwards ease-in-out;
+            stroke-width: 4;
+            stroke-linecap: round;
+            fill: none;
+        }
+
+        .logo-letter:nth-child(1) path { animation-delay: 0.3s; stroke: #ff4d88; }
+        .logo-letter:nth-child(2) path { animation-delay: 0.6s; stroke: #4d88ff; }
+        .logo-letter:nth-child(3) path { animation-delay: 0.9s; stroke: #88ff4d; }
+
+        @keyframes draw {
+            to { stroke-dashoffset: 0; }
+        }
+
+        /* Loading Text */
+        .loading-text {
+            margin-top: 30px;
+            font-size: 18px;
+            letter-spacing: 2px;
+            color: rgba(255,255,255,0.8);
+        }
+
+        .loading-dots {
+            display: inline-block;
+            width: 20px;
+            text-align: left;
+        }
+
+        .loading-dots::after {
+            content: '...';
+            animation: dots 1.5s infinite steps(4);
+            display: inline-block;
+            width: 20px;
+            overflow: hidden;
+            vertical-align: bottom;
+        }
+
+        @keyframes dots {
+            0% { width: 0; content: ''; }
+            25% { width: 5px; content: '.'; }
+            50% { width: 10px; content: '..'; }
+            75% { width: 15px; content: '...'; }
+        }
+
+        /* Progress Bar */
+        .progress-container {
+            width: 300px;
+            height: 4px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 2px;
+            margin: 20px auto;
+            overflow: hidden;
+        }
+
+        .progress-bar {
+            height: 100%;
+            width: 0;
+            background: linear-gradient(90deg, #ff4d88, #4d88ff);
+            border-radius: 2px;
+            animation: progress 5s ease-in-out forwards;
+        }
+
+        @keyframes progress {
+            to { width: 100%; }
+        }
+
+        /* Status Message */
+        .status-message {
+            font-size: 14px;
+            color: rgba(255,255,255,0.6);
+            margin-top: 15px;
+            height: 20px;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <a href="#" class="logo">
+            <i class="fas fa-hands-helping"></i>
+            <span>Unity In Service</span>
+        </a>
+        <button class="menu-btn" onclick="toggleSidebar()">
+            <i class="fas fa-bars"></i>
+        </button>
+        <nav>
+            <a href="#requirements" class="active">
+                <i class="fas fa-list"></i>
+                <span>Requirements</span>
+            </a>
+            <a href="login.php">
+                <i class="fas fa-sign-in-alt"></i>
+                <span>Login</span>
+            </a>
+            <a href="volunteer_registration.php">
+                <i class="fas fa-user-plus"></i>
+                <span>Register</span>
+            </a>
+            <a href="disaster_alert.html">
+                <i class="fas fa-bell"></i>
+                <span>Alert Disaster</span>
+            </a>
+        </nav>
+    </header>
+    
+    <div id="sidebar" class="sidebar">
+        <button class="close-btn" onclick="toggleSidebar()">
+            <i class="fas fa-times"></i>
+        </button>
+        <ul>
+            <li>
+                <a href="#requirements">
+                    <i class="fas fa-list"></i>
+                    <span>Requirements</span>
+                </a>
+            </li>
+            <li>
+                <a href="login.php">
+                    <i class="fas fa-sign-in-alt"></i>
+                    <span>Login</span>
+                </a>
+            </li>
+            <li>
+                <a href="volunteer_registration.php">
+                    <i class="fas fa-user-plus"></i>
+                    <span>Register</span>
+                </a>
+            </li>
+            <li>
+                <a href="disaster_alert.html">
+                    <i class="fas fa-bell"></i>
+                    <span>Alert Disaster</span>
+                </a>
+            </li>
+        </ul>
+    </div>
+    
+    <main class="main">
+        <section class="hero">
+            <h1>Together We Can Make a Difference</h1>
+            <p>Join our network of volunteers to provide critical support in disaster-affected areas. Your help can save lives and rebuild communities.</p>
+            <div class="btn-container">
+                <a href="volunteer_registration.php" class="btn">Become a Volunteer</a>
+                <a href="#requirements" class="btn btn-outline">View Needs</a>
+            </div>
+        </section>
+        
+        <section class="requirements-section" id="requirements">
+            <div class="section-title">
+                <h2>Disaster Area Requirements</h2>
+            </div>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Requirement</th>
+                        <th>Disaster Area</th>
+                        <th>Needed</th>
+                        <th>Collected</th>
+                        <th>Progress</th>
+                        <th>Status</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody id="requirements-list">
+                    <!-- Data will be loaded here dynamically -->
+                </tbody>
+            </table>
+            
+            <div class="section-title">
+                <h2>Disaster Locations</h2>
+            </div>
+            <div id="map"></div>
+        </section>
+    </main>
+    
+    <footer>
+        <div class="footer-content">
+            <div class="social-links">
+                <a href="#"><i class="fab fa-facebook"></i></a>
+                <a href="#"><i class="fab fa-twitter"></i></a>
+                <a href="#"><i class="fab fa-instagram"></i></a>
+                <a href="#"><i class="fab fa-linkedin"></i></a>
+            </div>
+            <p class="copyright">&copy; 2025 Unity In Service. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script>
+        // Initialize map
+        let map;
+
+        function toggleSidebar() {
+            const sidebar = document.getElementById("sidebar");
+            sidebar.classList.toggle("active");
+        }
+
+        async function fetchRequirements() {
+            try {
+                const response = await fetch('fetch_requirements.php');
+                const data = await response.json();
+                
+                const tableBody = document.getElementById("requirements-list");
+                tableBody.innerHTML = "";
+                
+                // Initialize map if not already initialized
+                if (!map) {
+                    map = L.map('map').setView([20, 0], 2);
+                    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                        attribution: '© OpenStreetMap contributors'
+                    }).addTo(map);
+                }
+
+                const markers = [];
+                
+                data.forEach(req => {
+                    const progress = (req.collected / req.needed) * 100;
+                    const statusClass = progress >= 100 ? "status-complete" : 
+                                      progress >= 50 ? "status-pending" : "status-urgent";
+
+                    // Add table row
+                    const row = document.createElement("tr");
+                    row.innerHTML = `
+                        <td>${req.requirement}</td>
+                        <td>${req.disaster_area}</td>
+                        <td>${req.needed.toLocaleString()}</td>
+                        <td>${req.collected.toLocaleString()}</td>
+                        <td>
+                            <div class="progress-container">
+                                <div class="progress-bar" style="width: ${progress}%">
+                                    ${progress.toFixed(1)}%
+                                </div>
+                            </div>
+                        </td>
+                        <td><span class="status ${statusClass}">${progress >= 100 ? 'Complete' : progress >= 50 ? 'In Progress' : 'Urgent'}</span></td>
+                        <td>
+                            ${req.latitude && req.longitude ? 
+                                `<button class="action-btn" onclick="map.setView([${req.latitude}, ${req.longitude}], 12)">
+                                    <i class="fas fa-map-marker-alt"></i>
+                                    <span>View</span>
+                                </button>` : 
+                                'No coordinates'}
+                        </td>
+                    `;
+                    tableBody.appendChild(row);
+
+                    // Add marker if coordinates exist
+                    if (req.latitude && req.longitude) {
+                        const marker = L.marker([req.latitude, req.longitude]).addTo(map);
+                        marker.bindPopup(` 
+                            <b>${req.disaster_area}</b><br>
+                            ${req.requirement}<br>
+                            Needed: ${req.needed}<br>
+                            Collected: ${req.collected}<br>
+                            Status: ${progress >= 100 ? 'Complete' : progress >= 50 ? 'In Progress' : 'Urgent'}
+                        `);
+                        markers.push([req.latitude, req.longitude]);
+                    }
+                });
+
+                // Adjust map view to show all markers
+                if (markers.length > 0) {
+                    map.fitBounds(L.latLngBounds(markers));
+                }
+
+            } catch (error) {
+                console.error("Error:", error);
+                alert('Failed to load disaster data');
+            }
+        }
+
+        // Initialize when page loads
+        document.addEventListener("DOMContentLoaded", function() {
+            fetchRequirements();
+            
+            // Smooth scrolling for anchor links
+            document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+                anchor.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const targetId = this.getAttribute('href');
+                    if (targetId === '#') return;
+                    
+                    const targetElement = document.querySelector(targetId);
+                    if (targetElement) {
+                        window.scrollTo({
+                            top: targetElement.offsetTop - 80,
+                            behavior: 'smooth'
+                        });
+                        
+                        // Close sidebar if open
+                        const sidebar = document.getElementById("sidebar");
+                        sidebar.classList.remove("active");
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>

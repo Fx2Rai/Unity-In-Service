@@ -1,0 +1,15 @@
+{"user_name":"aa","disaster_type":"Flood","latitude":22.60651113471892,"longitude":83.27416995540263}
+{"user_name":"arjun","disaster_type":"Flood","latitude":22.60651113471892,"longitude":83.27416995540263}
+{"user_name":"arjun","disaster_type":"Flood","latitude":22.60651113471892,"longitude":83.27416995540263}
+{"user_name":"kk","disaster_type":"Flood","latitude":9.9679032,"longitude":76.2444378}
+{"user_name":"kk","disaster_type":"Flood","latitude":9.9679032,"longitude":76.2444378}
+{"user_name":"kk","disaster_type":"Flood","latitude":9.9679032,"longitude":76.2444378}
+{"user_name":"kk","disaster_type":"Flood","latitude":9.9679032,"longitude":76.2444378}
+{"user_name":"ll","disaster_type":"Flood","latitude":10.3528744,"longitude":76.5120396}
+{"user_name":"ll","disaster_type":"Flood","latitude":10.3528744,"longitude":76.5120396}
+{"user_name":"ll","disaster_type":"Flood","latitude":10.3528744,"longitude":76.5120396}
+{"user_name":"ll","disaster_type":"Flood","latitude":10.3528744,"longitude":76.5120396}
+{"user_name":"ll","disaster_type":"Flood","latitude":10.3528744,"longitude":76.5120396}
+{"user_name":"ll","disaster_type":"Flood","latitude":10.3528744,"longitude":76.5120396}
+{"user_name":"ll","disaster_type":"Flood","latitude":10.3528744,"longitude":76.5120396}
+{"user_name":"ll","disaster_type":"Flood","latitude":10.3528744,"longitude":76.5120396}
